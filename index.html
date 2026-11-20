@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Hörtest Telefonstimme</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: schmale Leseseite, oben die Spielregeln, darunter sechs gleich gebaute Stimmen-Karten im Raster, unten die Auflösung */
+:root{
+  --bg:#f3f6f5; --surface:#ffffff; --ink:#13201c; --muted:#5b6b66; --line:#d9e2df;
+  --accent:#0d7a6a; --accent-ink:#ffffff; --accent-soft:#dff0ec; --star:#c98a12;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body:"Inter", system-ui, -apple-system, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1715; --surface:#16211e; --ink:#e6eeeb; --muted:#93a59f; --line:#26332f;
+  --accent:#3cc2ab; --accent-ink:#06201b; --accent-soft:#163a33; --star:#f0b444; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1715; --surface:#16211e; --ink:#e6eeeb; --muted:#93a59f; --line:#26332f;
+  --accent:#3cc2ab; --accent-ink:#06201b; --accent-soft:#163a33; --star:#f0b444; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-block:40px 64px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:grid;gap:32px}
+header{display:grid;gap:12px;max-width:68ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1.08;margin:0;text-wrap:balance}
+header p{margin:0;color:var(--muted)}
+.steps{display:flex;flex-wrap:wrap;gap:8px 20px;margin:4px 0 0;padding:0;list-style:none;font-size:14px}
+.steps li{display:flex;gap:8px;align-items:baseline}
+.steps b{font-family:var(--mono);font-weight:500;color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:14px;align-content:start;min-width:0}
+.card-head{display:flex;align-items:center;gap:12px}
+.letter{font-family:var(--display);font-weight:700;font-size:28px;width:48px;height:48px;border-radius:50%;
+  display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);flex:none}
+.who{display:grid;min-width:0}
+.who strong{font-family:var(--display);font-weight:500;font-size:18px}
+.who span{font-size:13px;color:var(--muted)}
+.reveal{display:none;font-size:13px;padding:8px 10px;border-radius:8px;background:var(--accent-soft);color:var(--ink)}
+.revealed .reveal{display:block}
+.clips{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.clip{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:6px 8px;border-radius:10px}
+.clip:hover{background:var(--bg)}
+.clip.playing{background:var(--accent-soft)}
+.play{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center}
+.play:hover{border-color:var(--accent);color:var(--accent)}
+.play:focus-visible,.btn:focus-visible,.stars button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.play svg{width:14px;height:14px;fill:currentColor}
+.clip-name{font-size:14px;font-weight:500}
+.clip-time{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rate{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.rate span{font-size:13px;color:var(--muted)}
+.stars{display:flex;gap:2px}
+.stars button{background:none;border:0;cursor:pointer;font-size:22px;line-height:1;color:var(--line);padding:2px}
+.stars button.on{color:var(--star)}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+  border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:16px 18px}
+.bar p{margin:0;font-size:14px;color:var(--muted);max-width:60ch}
+.btn{font:600 14px var(--body);border-radius:999px;padding:10px 18px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.ranking{font-size:14px;margin:0;padding-left:20px}
+details.texts{font-size:14px;color:var(--muted);max-width:75ch}
+details.texts summary{cursor:pointer;color:var(--ink);font-weight:500}
+details.texts ol{padding-left:20px}
+footer{font-size:13px;color:var(--muted);max-width:75ch}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap" id="app">
+  <header>
+    <div class="eyebrow">Annapurna · Telefon-KI · Blindtest</div>
+    <h1>Welche Stimme soll ans Telefon?</h1>
+    <p>Acht KI-Stimmen sprechen dieselben vier Sätze aus einem typischen Kundenanruf. Welcher Anbieter dahintersteckt, bleibt verborgen, bis du auf „Auflösen“ klickst. So entscheidet nur das Ohr.</p>
+    <ol class="steps">
+      <li><b>1</b> Am besten mit Kopfhörern anhören</li>
+      <li><b>2</b> Jede Stimme mit Sternen bewerten</li>
+      <li><b>3</b> Erst dann auflösen</li>
+    </ol>
+  </header>
+
+  <section class="grid" id="grid" aria-label="Stimmen"></section>
+
+  <section class="bar">
+    <div>
+      <ol class="ranking" id="ranking"></ol>
+      <p id="rank-hint">Deine Bewertung bleibt nur in deinem Browser. Sag Marius am Ende einfach deine Top 2.</p>
+    </div>
+    <button class="btn" id="reveal" type="button">Auflösen</button>
+  </section>
+
+  <details class="texts">
+    <summary>Die vier Testsätze</summary>
+    <ol id="texts"></ol>
+  </details>
+
+  <footer>Erstellt am 20.11.2026. ElevenLabs-Stimmen mit dem Modell Eleven v4, OpenAI-Stimmen mit dem Live-Sprachmodell gpt-realtime-2.1, Aircall-Stimmen aus dem Testanruf im Browser beim AI Voice Agent, ungekürzt mitgeschnitten. Jede Stimme wurde nur einmal pro Satz erzeugt, ohne Nachbearbeitung. Am echten Telefon klingt alles etwas dumpfer als hier. ElevenLabs-Stimmen erstellt mit <a href="https://elevenlabs.io" style="color:inherit">elevenlabs.io</a>.</footer>
+</div>
+
+<script>
+const SENTENCES = [
+  {name:"Begrüßung", text:"Hallo und herzlich willkommen bei Annapurna! Hier ist der digitale Kundenservice – ich bin eine KI. Wie kann ich Ihnen heute helfen?"},
+  {name:"Bestellstatus", text:"Einen kleinen Moment, ich schaue mal kurz nach … So, da hab ich's. Ihre Bestellung mit der Nummer 10 482 ist gestern rausgegangen und liegt gerade bei DHL. Die sollte morgen, spätestens übermorgen bei Ihnen sein."},
+  {name:"Rücksendung", text:"Ach, das tut mir leid! Das ist aber gar kein Problem. Ich schicke Ihnen gleich alle Infos zur Rücksendung per E-Mail – dann können Sie das ganz in Ruhe erledigen."},
+  {name:"Weiterleitung", text:"Das verstehe ich gut. Bei Fragen zur Gesundheit verbinde ich Sie lieber mit meiner Kollegin – die kann Ihnen da besser weiterhelfen. Einen Moment bitte, ich stelle Sie durch."}
+];
+const VOICES = [
+  {id:"A", gender:"männlich", reveal:"ElevenLabs · „Marc – Pleasant and Interesting“ · Eleven v4", dur:[8.4,15.5,9.2,9.5]},
+  {id:"B", gender:"weiblich", reveal:"OpenAI (GPT Live) · Stimme „Marin“ · gpt-realtime-2.1", dur:[8.8,17.7,10.8,10.9]},
+  {id:"C", gender:"weiblich", reveal:"ElevenLabs · „Susi – Effortless and Confident“ · Eleven v4", dur:[8.1,16.3,9.6,9.4]},
+  {id:"D", gender:"männlich", reveal:"ElevenLabs · „Mark – Interesting and Fun“ · Eleven v4", dur:[8.0,15.1,8.8,8.9]},
+  {id:"E", gender:"männlich", reveal:"OpenAI (GPT Live) · Stimme „Cedar“ · gpt-realtime-2.1", dur:[9.7,15.6,10.1,10.7]},
+  {id:"F", gender:"weiblich", reveal:"ElevenLabs · „Laura – Sharp and Professional“ · Eleven v4", dur:[8.7,16.2,9.4,9.6]},
+  {id:"G", gender:"männlich", reveal:"Aircall AI Voice Agent · Stimme „Henrik“ · Tonfall freundlich", dur:[6.3,12.8,7.1,7.4]},
+  {id:"H", gender:"weiblich", reveal:"Aircall AI Voice Agent · Stimme „Dana“ · Tonfall freundlich", dur:[7.8,14.9,8.6,8.7]}
+];
+const PLAY = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg>';
+const STOP = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="3.5" width="9" height="9" rx="1"/></svg>';
+let ratings = {};
+try { ratings = JSON.parse(localStorage.getItem("hoertest-ratings") || "{}"); } catch(e) {}
+const save = () => { try { localStorage.setItem("hoertest-ratings", JSON.stringify(ratings)); } catch(e) {} };
+
+const audio = new Audio();
+let current = null;
+function stop(){ audio.pause(); if(current){ current.row.classList.remove("playing"); current.btn.innerHTML = PLAY; current.btn.setAttribute("aria-label", current.label); } current = null; }
+audio.addEventListener("ended", stop);
+
+const grid = document.getElementById("grid");
+VOICES.forEach(v => {
+  const card = document.createElement("article");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="card-head"><div class="letter">${v.id}</div>
+      <div class="who"><strong>Stimme ${v.id}</strong><span>${v.gender}</span></div></div>
+    <div class="reveal">${v.reveal}</div>
+    <ul class="clips"></ul>
+    <div class="rate"><span>Wie echt klingt sie?</span><div class="stars" role="group" aria-label="Bewertung Stimme ${v.id}"></div></div>`;
+  const ul = card.querySelector(".clips");
+  SENTENCES.forEach((s, i) => {
+    const li = document.createElement("li");
+    li.className = "clip";
+    const label = `Stimme ${v.id}, ${s.name} abspielen`;
+    li.innerHTML = `<button class="play" type="button" aria-label="${label}">${PLAY}</button>
+      <span class="clip-name">${s.name}</span><span class="clip-time">${v.dur[i].toFixed(1).replace(".", ",")} s</span>`;
+    const btn = li.querySelector("button");
+    btn.addEventListener("click", () => {
+      const same = current && current.btn === btn;
+      stop();
+      if (same) return;
+      audio.src = `audio/${v.id}_${i+1}.mp3`;
+      audio.play().catch(() => {});
+      current = {row: li, btn, label};
+      li.classList.add("playing"); btn.innerHTML = STOP; btn.setAttribute("aria-label", "Stopp");
+    });
+    ul.appendChild(li);
+  });
+  const stars = card.querySelector(".stars");
+  for (let n = 1; n <= 5; n++) {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = "★"; b.setAttribute("aria-label", `${n} von 5 Sternen`);
+    b.addEventListener("click", () => { ratings[v.id] = n; save(); paintStars(); renderRanking(); });
+    stars.appendChild(b);
+  }
+  v.stars = stars;
+  grid.appendChild(card);
+});
+function paintStars(){ VOICES.forEach(v => [...v.stars.children].forEach((b, i) => b.classList.toggle("on", i < (ratings[v.id] || 0)))); }
+let revealed = false;
+function renderRanking(){
+  const ol = document.getElementById("ranking");
+  const rated = VOICES.filter(v => ratings[v.id]).sort((a, b) => ratings[b.id] - ratings[a.id]);
+  ol.innerHTML = rated.slice(0, 3).map(v => `<li>Stimme ${v.id}${revealed ? " – " + v.reveal.split(" · ").slice(0, 2).join(", ") : ""} (${ratings[v.id]} ★)</li>`).join("");
+  ol.hidden = rated.length === 0;
+  document.getElementById("rank-hint").textContent = rated.length
+    ? `${rated.length} von ${VOICES.length} Stimmen bewertet. Deine Bewertung bleibt nur in deinem Browser.`
+    : "Deine Bewertung bleibt nur in deinem Browser. Sag Marius am Ende einfach deine Top 2.";
+}
+document.getElementById("reveal").addEventListener("click", e => {
+  revealed = !revealed;
+  document.getElementById("app").classList.toggle("revealed", revealed);
+  e.currentTarget.textContent = revealed ? "Wieder verbergen" : "Auflösen";
+  e.currentTarget.classList.toggle("ghost", revealed);
+  renderRanking();
+});
+document.getElementById("texts").innerHTML = SENTENCES.map(s => `<li><b>${s.name}:</b> ${s.text}</li>`).join("");
+paintStars(); renderRanking();
+</script>
+
+</body>
+</html>
